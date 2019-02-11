@@ -931,9 +931,6 @@
             // 
             chartArea1.AxisX.Maximum = 400D;
             chartArea1.AxisX.Minimum = 0D;
-            chartArea1.AxisY.Interval = 200D;
-            chartArea1.AxisY.Maximum = 400D;
-            chartArea1.AxisY.Minimum = -400D;
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             legend1.Enabled = false;
@@ -958,8 +955,6 @@
             // 
             chartArea2.AxisX.Maximum = 400D;
             chartArea2.AxisX.Minimum = 0D;
-            chartArea2.AxisY.Maximum = 250D;
-            chartArea2.AxisY.Minimum = 0D;
             chartArea2.Name = "ChartArea1";
             this.chart2.ChartAreas.Add(chartArea2);
             legend2.Enabled = false;
@@ -984,9 +979,6 @@
             // 
             chartArea3.AxisX.Maximum = 400D;
             chartArea3.AxisX.Minimum = 0D;
-            chartArea3.AxisY.Interval = 2D;
-            chartArea3.AxisY.Maximum = 10D;
-            chartArea3.AxisY.Minimum = 0D;
             chartArea3.Name = "ChartArea1";
             this.chart3.ChartAreas.Add(chartArea3);
             legend3.Enabled = false;
@@ -1006,6 +998,7 @@
             title3.Name = "Title1";
             title3.Text = "Tap Motor Torq";
             this.chart3.Titles.Add(title3);
+            this.chart3.Click += new System.EventHandler(this.chart3_Click);
             // 
             // chart4
             // 
@@ -1177,7 +1170,7 @@
             this.Controls.Add(this.btnstop);
             this.Controls.Add(this.btninitial);
             this.Name = "Form1";
-            this.Text = "攻牙機";
+            this.Text = "攻牙機 V1.0";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

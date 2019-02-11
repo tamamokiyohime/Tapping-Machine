@@ -336,6 +336,10 @@ namespace DMC_NET
             ExcelPath.Text += FileStr;
         }
 
+        private void chart3_Click(object sender, EventArgs e)
+        {
+
+        }
 
         private void btnWork_Click(object sender, EventArgs e)
         {
