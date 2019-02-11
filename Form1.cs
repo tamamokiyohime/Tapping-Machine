@@ -323,11 +323,11 @@ namespace DMC_NET
             {
                 if (i>motorRpm1.Count-1)
                 {
-                    file.WriteLine(",,,," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i]);
+                    file.WriteLine(",,,," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i] + "," + source[i]);
                 }
                 else
                 {
-                    file.WriteLine(motorRpm1[i] + "," + motorRpm2[i] + "," + motorTorque1[i] + "," + motorTorque2[i] + "," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i]);
+                    file.WriteLine(motorRpm1[i] + "," + motorRpm2[i] + "," + motorTorque1[i] + "," + motorTorque2[i] + "," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i] + "," + source[i]);
                 }
             }
             file.Close();
@@ -402,6 +402,11 @@ namespace DMC_NET
             chart6.DataBind();
             chart7.DataBind();
             chart8.DataBind();
+
+        }
+
+        private void chart5_Click(object sender, EventArgs e)
+        {
 
         }
 

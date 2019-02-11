@@ -995,8 +995,6 @@
             // 
             // chart1
             // 
-            chartArea1.AxisX.Maximum = 400D;
-            chartArea1.AxisX.Minimum = 0D;
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             legend1.Enabled = false;
@@ -1019,8 +1017,6 @@
             // 
             // chart2
             // 
-            chartArea2.AxisX.Maximum = 400D;
-            chartArea2.AxisX.Minimum = 0D;
             chartArea2.Name = "ChartArea1";
             this.chart2.ChartAreas.Add(chartArea2);
             legend2.Enabled = false;
@@ -1043,8 +1039,6 @@
             // 
             // chart3
             // 
-            chartArea3.AxisX.Maximum = 400D;
-            chartArea3.AxisX.Minimum = 0D;
             chartArea3.Name = "ChartArea1";
             this.chart3.ChartAreas.Add(chartArea3);
             legend3.Enabled = false;
@@ -1067,8 +1061,6 @@
             // 
             // chart4
             // 
-            chartArea4.AxisX.Maximum = 400D;
-            chartArea4.AxisX.Minimum = 0D;
             chartArea4.Name = "ChartArea1";
             this.chart4.ChartAreas.Add(chartArea4);
             legend4.Enabled = false;
@@ -1091,8 +1083,6 @@
             // 
             // chart5
             // 
-            chartArea5.AxisX.Maximum = 700D;
-            chartArea5.AxisX.Minimum = 0D;
             chartArea5.Name = "ChartArea1";
             this.chart5.ChartAreas.Add(chartArea5);
             legend5.Enabled = false;
@@ -1108,15 +1098,15 @@
             this.chart5.Series.Add(series5);
             this.chart5.Size = new System.Drawing.Size(470, 250);
             this.chart5.TabIndex = 67;
+            this.chart5.TabStop = false;
             this.chart5.Text = "chart1";
             title5.Name = "Title1";
             title5.Text = "Tap KTR Speed";
             this.chart5.Titles.Add(title5);
+            this.chart5.Click += new System.EventHandler(this.chart5_Click);
             // 
             // chart6
             // 
-            chartArea6.AxisX.Maximum = 700D;
-            chartArea6.AxisX.Minimum = 0D;
             chartArea6.Name = "ChartArea1";
             this.chart6.ChartAreas.Add(chartArea6);
             legend6.Enabled = false;
@@ -1139,8 +1129,6 @@
             // 
             // chart7
             // 
-            chartArea7.AxisX.Maximum = 700D;
-            chartArea7.AxisX.Minimum = 0D;
             chartArea7.Name = "ChartArea1";
             this.chart7.ChartAreas.Add(chartArea7);
             legend7.Enabled = false;
@@ -1163,8 +1151,6 @@
             // 
             // chart8
             // 
-            chartArea8.AxisX.Maximum = 700D;
-            chartArea8.AxisX.Minimum = 0D;
             chartArea8.Name = "ChartArea1";
             this.chart8.ChartAreas.Add(chartArea8);
             legend8.Enabled = false;
