@@ -58,6 +58,7 @@ namespace DMC_NET
         List<double> ktrTorque2 = new List<double>();
         List<double> ktrRpm1 = new List<double>();
         List<double> ktrRpm2 = new List<double>();
+        List<char> source = new List<char>();
         double[,] rpm_1 = new double[90000, 10];
         double[,] rpm_2 = new double[90000, 10];
         double[] rpm_motor1 = new double[90000];
@@ -356,6 +357,8 @@ namespace DMC_NET
 
         private void btnWork_Click(object sender, EventArgs e)
         {
+            
+
             chart1.Series[0].Points.Clear();
             chart2.Series[0].Points.Clear();
             chart3.Series[0].Points.Clear();
@@ -372,6 +375,16 @@ namespace DMC_NET
             motorRpm2.Clear();
             motorTorque1.Clear();
             motorTorque2.Clear();
+            source.Clear();
+
+            chart5.DataSource = ktrRpm1;
+            chart6.DataSource = ktrRpm2;
+            chart7.DataSource = ktrTorque1;
+            chart8.DataSource = ktrTorque2;
+            chart5.Series[0].YValueMembers = "ktrRpm1";
+            chart6.Series[0].YValueMembers = "ktrRpm2";
+            chart7.Series[0].YValueMembers = "ktrTorque1";
+            chart8.Series[0].YValueMembers = "ktrTorque2";
 
             ThWorking = new Thread(working);
             ThWorking.Start();
@@ -380,6 +393,15 @@ namespace DMC_NET
             ThWorking_PLC.Start();
             ThWorking_PLC_2 = new Thread(working_PLC2);
             ThWorking_PLC_2.Start();
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            chart5.DataBind();
+            chart6.DataBind();
+            chart7.DataBind();
+            chart8.DataBind();
 
         }
 
@@ -728,99 +750,6 @@ namespace DMC_NET
                 }
             }
         }
-        //public void plcState()
-        //{
-        //    int m_Rpm = Int32.Parse(txtRpm2.Text);
-        //    while (true)
-        //    {
-        //        CheckForIllegalCrossThreadCalls = false;
-        //        count++;
-        //        lblcount.Text = count.ToString();
-        //        int cmd1 = 0, pos1 = 0, cmd2 = 0, pos2 = 0;
-        //        short spd1 = 0, spd2 = 0, toe1 = 0, toe2 = 0;
-        //        uint err1 = 0, err2 = 0;
-        //        *******
-        //        rc = CPCI_DMC.CS_DMC_01_get_command(gCardNo, node1, 0, ref cmd1);
-        //        rc = CPCI_DMC.CS_DMC_01_get_command(gCardNo, node2, 0, ref cmd2);
-        //        rc = CPCI_DMC.CS_DMC_01_get_command(gCardNo, node2, 0, ref com2);
-        //        Command
-        //        if (rc == 0)
-        //        {
-        //            txtcommand1.Text = cmd1.ToString();
-        //            txtcommand2.Text = cmd2.ToString();
-        //        }
-        //        Feedback
-        //        rc = CPCI_DMC.CS_DMC_01_get_position(gCardNo, node1, 0, ref pos1);
-        //        rc = CPCI_DMC.CS_DMC_01_get_position(gCardNo, node2, 0, ref pos2);
-        //        if (rc == 0)
-        //        {
-        //            txtfeedback1.Text = pos1.ToString();
-        //            txtfeedback2.Text = pos2.ToString();
-        //        }
-        //        Speed
-        //        rc = CPCI_DMC.CS_DMC_01_get_rpm(gCardNo, node1, 0, ref spd1);
-        //        rc = CPCI_DMC.CS_DMC_01_get_rpm(gCardNo, node2, 0, ref spd2);
-        //        if (rc == 0)
-        //        {
-        //            txtspeed1.Text = spd1.ToString();
-        //            txtspeed2.Text = spd2.ToString();
-        //        }
-        //        Torque
-        //        rc = CPCI_DMC.CS_DMC_01_get_torque(gCardNo, node1, 0, ref toe1);
-        //        rc = CPCI_DMC.CS_DMC_01_get_torque(gCardNo, node2, 0, ref toe2);
-        //        if (rc == 0)
-        //        {
-        //            扭矩是千分比
-        //            txtTorque1.Text = toe1.ToString();
-        //            txtTorque2.Text = toe2.ToString();
-        //        }
-        //        err
-        //        rc = CPCI_DMC.CS_DMC_01_get_alm_code(gCardNo, node1, 0, ref err1);
-        //        rc = CPCI_DMC.CS_DMC_01_get_alm_code(gCardNo, node1, 0, ref err2);
-        //        if (rc == 0)
-        //        {
-        //            txtERR1.Text = err1.ToString();
-        //            txtERR2.Text = err2.ToString();
-        //        }
-        //        rpm_motor1[excelTime] = spd1;
-        //        rpm_motor2[excelTime] = spd2;
-        //        torque_motor1[excelTime] = ((double)toe1 / 1000) * 7.16;
-        //        torque_motor2[excelTime] = ((double)toe2 / 1000) * 7.16;
-        //        Send("000000000006" + "010310280028");  //前段為TCP固定，後段為讀取暫存器D
-        //        Send("000000000006" + "010310000028");
-        //        Listen();                                 //解析收到的MODBUS
-        //        *************
-        //        if ((com2 <= 128000 * TransmissionRate / 2 + 16 * 3556 * TransmissionRate / 2 - delayMotorDeg * 3556 * TransmissionRate / 2) && !b)    //1280000*50為180deg +- deg*3556*50 +-delay deg
-        //        {
-        //            rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
-        //            rc = CPCI_DMC.CS_DMC_01_set_velocity(gCardNo, node1, 0, m_Rpm);
-        //        }
-        //        else if (com2 >= (1280000 * TransmissionRate / 2 + 16 * 3556 * TransmissionRate / 2 - delayMotorDeg * 3556 * TransmissionRate / 2) && com2 <= 1280000 * TransmissionRate / 2 + 16 * 3556 * TransmissionRate / 2 + delayMotorDeg * 3556 * TransmissionRate / 2)
-        //        {
-        //            rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
-        //            rc = CPCI_DMC.CS_DMC_01_set_velocity(gCardNo, node1, 0, 0);
-        //        }
-        //        else
-        //        {
-        //            b = true;
-        //            rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
-        //            rc = CPCI_DMC.CS_DMC_01_set_velocity(gCardNo, node1, 0, 0 - m_Rpm);
-        //            if (spd2 < 100)
-        //            {
-        //                rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, node1, 0, 0.1);
-        //                rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, node2, 0, 0.1);
-        //                btnralm.Enabled = false;
-        //                btnstop.Enabled = false;
-        //                btnNmove.Enabled = false;
-        //                btnPmove.Enabled = false;
-        //                chksvon.Enabled = false;
-        //                Thread.Sleep(300);
-        //                chksvon.Checked = false;
-        //                th.Abort();
-        //            }
-        //        }
-        //    }
-        //}
         private void Send(string Str)
         {
             byte[] A = new byte[1]; //初始需告陣列(因不知道資料大小，下面會做陣列調整)
@@ -907,6 +836,7 @@ namespace DMC_NET
             ktrRpm2.Add(rpm2);
             ktrTorque1.Add(torque1);
             ktrTorque2.Add(torque2);
+            source.Add('A');
 
         }
         private void Listen2()
@@ -968,6 +898,7 @@ namespace DMC_NET
             ktrRpm2.Add(rpm2);
             ktrTorque1.Add(torque1);
             ktrTorque2.Add(torque2);
+            source.Add('B');
 
         }
         public double changeVoltage0x16(double v)

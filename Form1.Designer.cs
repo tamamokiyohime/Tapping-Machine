@@ -151,6 +151,7 @@
             this.chart6 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart7 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart8 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -1092,9 +1093,6 @@
             // 
             chartArea5.AxisX.Maximum = 700D;
             chartArea5.AxisX.Minimum = 0D;
-            chartArea5.AxisY.Interval = 50D;
-            chartArea5.AxisY.Maximum = 350D;
-            chartArea5.AxisY.Minimum = 0D;
             chartArea5.Name = "ChartArea1";
             this.chart5.ChartAreas.Add(chartArea5);
             legend5.Enabled = false;
@@ -1119,8 +1117,6 @@
             // 
             chartArea6.AxisX.Maximum = 700D;
             chartArea6.AxisX.Minimum = 0D;
-            chartArea6.AxisY.Maximum = 2.5D;
-            chartArea6.AxisY.Minimum = 0D;
             chartArea6.Name = "ChartArea1";
             this.chart6.ChartAreas.Add(chartArea6);
             legend6.Enabled = false;
@@ -1145,8 +1141,6 @@
             // 
             chartArea7.AxisX.Maximum = 700D;
             chartArea7.AxisX.Minimum = 0D;
-            chartArea7.AxisY.Maximum = 10D;
-            chartArea7.AxisY.Minimum = 0D;
             chartArea7.Name = "ChartArea1";
             this.chart7.ChartAreas.Add(chartArea7);
             legend7.Enabled = false;
@@ -1191,11 +1185,22 @@
             title8.Text = "Cam KTR Torq";
             this.chart8.Titles.Add(title8);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(912, 121);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(93, 40);
+            this.button1.TabIndex = 68;
+            this.button1.Text = "更新 KTR 圖表";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1964, 985);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.chart8);
             this.Controls.Add(this.chart4);
             this.Controls.Add(this.chart7);
@@ -1234,7 +1239,7 @@
             this.Controls.Add(this.btnstop);
             this.Controls.Add(this.btninitial);
             this.Name = "Form1";
-            this.Text = "攻牙機";
+            this.Text = "攻牙機 V1.1-beta";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -1352,6 +1357,7 @@
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.TextBox txtIPToPLC2;
+        private System.Windows.Forms.Button button1;
     }
 }
 
