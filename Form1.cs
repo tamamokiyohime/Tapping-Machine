@@ -282,6 +282,7 @@ namespace DMC_NET
             }
             T.Send(A, 0, Str.Length / 2, SocketFlags.None);
         }
+
         //================接收訊息========================================
         private void homeListen()
         {
@@ -304,12 +305,20 @@ namespace DMC_NET
         private void btnSaveExcel_Click(object sender, EventArgs e)
         {
             string FileStr = "D:\\";
+            FileStr += DateTime.Now.ToString("yyyyMMdd");
+            FileStr += " Experiment\\";
+            if (!Directory.Exists(FileStr))
+            {
+                Directory.CreateDirectory(FileStr);
+            }
             FileStr += DateTime.Now.ToString("yyMMdd-HHmm");
             FileStr += "-C" + txtRpm1.Text + "-T" + txtRpm2.Text + ".csv";
             txtReceive.Text = FileStr;
-            StreamWriter file=new StreamWriter(FileStr, false, Encoding.Default);
-            file.WriteLine("Tapper RPM(M),Cam RPM(M),Tapper Torq(M),Cam Torq(M),Tapper RPM(KTR),Cam RPM(KTR),Tapper Torq(KTR),Cam Torq(KTR)");
-            for (int i=0; i<ktrRpm1.Count; i++)
+            StreamWriter file = new StreamWriter(FileStr, false, Encoding.Default);
+            
+            file.Write("Tapper RPM(M),Cam RPM(M),Tapper Torq(M),Cam Torq(M),Tapper RPM(KTR),Cam RPM(KTR),Tapper Torq(KTR),Cam Torq(KTR),");
+            file.WriteLine(motorRpm1.Count.ToString() + "," + motorRpm2.Count.ToString() + "," + motorTorque1.Count.ToString() + "," + motorTorque2.Count.ToString() + "," + ktrRpm1.Count.ToString() + "," + ktrRpm2.Count.ToString() + "," + ktrTorque1.Count.ToString() + "," + ktrTorque2.Count.ToString());
+            for (int i = 0; i < ktrRpm1.Count; i++)
             {
                 if (i>motorRpm1.Count-1)
                 {
@@ -321,39 +330,7 @@ namespace DMC_NET
                 }
             }
             file.Close();
-            //String FileStr = "D:\\";
-            //FileStr += DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
-            //Excel.Application Excel_app1 = new Excel.Application();
-            //Excel.Workbook Excel_WB1 = Excel_app1.Workbooks.Add();
-            //Excel.Worksheet Excel_WS1 = new Excel.Worksheet();
-            //Excel_app1.Cells[1, 1] = "馬達牙攻轉速";
-            //Excel_app1.Cells[1, 2] = "馬達凸輪轉速";
-            //Excel_app1.Cells[1, 3] = "馬達牙攻扭矩";
-            //Excel_app1.Cells[1, 4] = "馬達凸輪扭矩";
-            //Excel_app1.Cells[1, 5] = "KTR牙攻轉速";
-            //Excel_app1.Cells[1, 6] = "KTR凸輪轉速";
-            //Excel_app1.Cells[1, 7] = "KTR牙攻扭矩";
-            //Excel_app1.Cells[1, 8] = "KTR凸輪扭矩";
-            //for(int i=0;i<motorRpm1.Count;i++)
-            //{
-            //    Excel_app1.Cells[i + 2, 1] = motorRpm1[i];
-            //    Excel_app1.Cells[i + 2, 2] = motorRpm2[i];
-            //    Excel_app1.Cells[i + 2, 3] = motorTorque1[i];
-            //    Excel_app1.Cells[i + 2, 4] = motorTorque2[i];
-            //}
-            //for (int i = 0; i < ktrRpm1.Count; i++)
-            //{
-            //    Excel_app1.Cells[i + 2, 5] = ktrRpm1[i];
-            //    Excel_app1.Cells[i + 2, 6] = ktrRpm2[i];
-            //    Excel_app1.Cells[i + 2, 7] = ktrTorque1[i];
-            //    Excel_app1.Cells[i + 2, 8] = ktrTorque2[i];
-            //}
-            //Excel_WB1.SaveAs(FileStr);
-            //Excel_WB1.Close();
-            //Excel_WB1 = null;
-            //Excel_app1.Quit();
-            //Excel_app1 = null;
-            //ExcelPath.Text += FileStr;
+            
         }
 
         private void btnConnectPLC2_Click(object sender, EventArgs e)
