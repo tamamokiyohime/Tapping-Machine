@@ -121,10 +121,16 @@
             this.txtfeedback2 = new System.Windows.Forms.TextBox();
             this.txtcommand2 = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.btnConnectPLC2 = new System.Windows.Forms.Button();
+            this.txtPortToPLC2 = new System.Windows.Forms.TextBox();
             this.btnConnectPLC = new System.Windows.Forms.Button();
+            this.lblConnectStatus2 = new System.Windows.Forms.Label();
             this.txtPortToPLC = new System.Windows.Forms.TextBox();
+            this.label34 = new System.Windows.Forms.Label();
             this.lblConnectStatus = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
+            this.txtIPToPLC2 = new System.Windows.Forms.TextBox();
             this.label26 = new System.Windows.Forms.Label();
             this.txtIPToPLC = new System.Windows.Forms.TextBox();
             this.txtReceive = new System.Windows.Forms.TextBox();
@@ -768,20 +774,44 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.btnConnectPLC2);
+            this.groupBox5.Controls.Add(this.txtPortToPLC2);
             this.groupBox5.Controls.Add(this.btnConnectPLC);
+            this.groupBox5.Controls.Add(this.lblConnectStatus2);
             this.groupBox5.Controls.Add(this.txtPortToPLC);
+            this.groupBox5.Controls.Add(this.label34);
             this.groupBox5.Controls.Add(this.lblConnectStatus);
+            this.groupBox5.Controls.Add(this.label33);
             this.groupBox5.Controls.Add(this.label25);
+            this.groupBox5.Controls.Add(this.txtIPToPLC2);
             this.groupBox5.Controls.Add(this.label26);
             this.groupBox5.Controls.Add(this.txtIPToPLC);
             this.groupBox5.Location = new System.Drawing.Point(673, 10);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox5.Size = new System.Drawing.Size(348, 106);
+            this.groupBox5.Size = new System.Drawing.Size(725, 106);
             this.groupBox5.TabIndex = 65;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "連線";
+            // 
+            // btnConnectPLC2
+            // 
+            this.btnConnectPLC2.Location = new System.Drawing.Point(595, 62);
+            this.btnConnectPLC2.Name = "btnConnectPLC2";
+            this.btnConnectPLC2.Size = new System.Drawing.Size(93, 35);
+            this.btnConnectPLC2.TabIndex = 2;
+            this.btnConnectPLC2.Text = "連線";
+            this.btnConnectPLC2.UseVisualStyleBackColor = true;
+            this.btnConnectPLC2.Click += new System.EventHandler(this.btnConnectPLC2_Click);
+            // 
+            // txtPortToPLC2
+            // 
+            this.txtPortToPLC2.Location = new System.Drawing.Point(588, 26);
+            this.txtPortToPLC2.Name = "txtPortToPLC2";
+            this.txtPortToPLC2.Size = new System.Drawing.Size(100, 22);
+            this.txtPortToPLC2.TabIndex = 1;
+            this.txtPortToPLC2.Text = "502";
             // 
             // btnConnectPLC
             // 
@@ -793,6 +823,15 @@
             this.btnConnectPLC.UseVisualStyleBackColor = true;
             this.btnConnectPLC.Click += new System.EventHandler(this.btnConnectPLC_Click);
             // 
+            // lblConnectStatus2
+            // 
+            this.lblConnectStatus2.AutoSize = true;
+            this.lblConnectStatus2.Location = new System.Drawing.Point(437, 71);
+            this.lblConnectStatus2.Name = "lblConnectStatus2";
+            this.lblConnectStatus2.Size = new System.Drawing.Size(25, 12);
+            this.lblConnectStatus2.TabIndex = 0;
+            this.lblConnectStatus2.Text = "Null";
+            // 
             // txtPortToPLC
             // 
             this.txtPortToPLC.Location = new System.Drawing.Point(232, 25);
@@ -800,6 +839,15 @@
             this.txtPortToPLC.Size = new System.Drawing.Size(100, 22);
             this.txtPortToPLC.TabIndex = 1;
             this.txtPortToPLC.Text = "502";
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(364, 71);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(56, 12);
+            this.label34.TabIndex = 0;
+            this.label34.Text = "連線狀態:";
             // 
             // lblConnectStatus
             // 
@@ -810,6 +858,15 @@
             this.lblConnectStatus.TabIndex = 0;
             this.lblConnectStatus.Text = "Null";
             // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(557, 29);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(24, 12);
+            this.label33.TabIndex = 0;
+            this.label33.Text = "Port";
+            // 
             // label25
             // 
             this.label25.AutoSize = true;
@@ -818,6 +875,14 @@
             this.label25.Size = new System.Drawing.Size(56, 12);
             this.label25.TabIndex = 0;
             this.label25.Text = "連線狀態:";
+            // 
+            // txtIPToPLC2
+            // 
+            this.txtIPToPLC2.Location = new System.Drawing.Point(395, 26);
+            this.txtIPToPLC2.Name = "txtIPToPLC2";
+            this.txtIPToPLC2.Size = new System.Drawing.Size(114, 22);
+            this.txtIPToPLC2.TabIndex = 1;
+            this.txtIPToPLC2.Text = "192.168.1.52";
             // 
             // label26
             // 
@@ -931,9 +996,6 @@
             // 
             chartArea1.AxisX.Maximum = 400D;
             chartArea1.AxisX.Minimum = 0D;
-            chartArea1.AxisY.Interval = 200D;
-            chartArea1.AxisY.Maximum = 400D;
-            chartArea1.AxisY.Minimum = -400D;
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             legend1.Enabled = false;
@@ -958,8 +1020,6 @@
             // 
             chartArea2.AxisX.Maximum = 400D;
             chartArea2.AxisX.Minimum = 0D;
-            chartArea2.AxisY.Maximum = 250D;
-            chartArea2.AxisY.Minimum = 0D;
             chartArea2.Name = "ChartArea1";
             this.chart2.ChartAreas.Add(chartArea2);
             legend2.Enabled = false;
@@ -984,9 +1044,6 @@
             // 
             chartArea3.AxisX.Maximum = 400D;
             chartArea3.AxisX.Minimum = 0D;
-            chartArea3.AxisY.Interval = 2D;
-            chartArea3.AxisY.Maximum = 10D;
-            chartArea3.AxisY.Minimum = 0D;
             chartArea3.Name = "ChartArea1";
             this.chart3.ChartAreas.Add(chartArea3);
             legend3.Enabled = false;
@@ -1289,6 +1346,12 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chart6;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart7;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart8;
+        private System.Windows.Forms.Button btnConnectPLC2;
+        private System.Windows.Forms.TextBox txtPortToPLC2;
+        private System.Windows.Forms.Label lblConnectStatus2;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.TextBox txtIPToPLC2;
     }
 }
 

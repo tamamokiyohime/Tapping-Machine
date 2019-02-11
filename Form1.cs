@@ -9,6 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using PCI_DMC;
 using PCI_DMC_ERR;
 using System.Collections.Generic;
+using System.IO;
 
 namespace DMC_NET
 {
@@ -16,7 +17,7 @@ namespace DMC_NET
      
     public partial class Form1 : Form
     {
-        Thread ThWorking, ThWorking_PLC, ThHome;
+        Thread ThWorking, ThWorking_PLC, ThHome, ThWorking_PLC_2;
         String X0Message = "", X1Message = "";
         bool KtrBoolClear = false;
         bool newturn = false;
@@ -41,11 +42,12 @@ namespace DMC_NET
         TextBox[] txtIoSts = new TextBox[16];
 
         Thread th;
-        Socket T;
+        Socket T, T2;
         int delayMotorDeg = 0;
         int rpmRate1 = 200; //ktr比例
         int rpmRate2 = 2;
-        int torqueRate = 5;
+        int torqueRate1 = 1;
+        int torqueRate2 = 5;
         int count = 0;      //一個行程資料數目
         int excelTime = 0;  //excel陣列數目
         ushort node1 = 2, node2 = 1;    //節點    虎尾3.4 中山1.2
@@ -227,7 +229,7 @@ namespace DMC_NET
                 //new Socket( 通訊協定家族IP4 , 通訊端類型 , 通訊協定TCP)
                 T = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 T.Connect(EP); //建立連線
-                lblConnectStatus.Text = "已連線至PLC";
+                lblConnectStatus.Text = "已連線至PLC1";
                 btnWork.Enabled = true;
             }
             catch (Exception)
@@ -301,41 +303,79 @@ namespace DMC_NET
         }
         private void btnSaveExcel_Click(object sender, EventArgs e)
         {
-            String FileStr = "D:\\";
-            FileStr += DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
-            Excel.Application Excel_app1 = new Excel.Application();
-            Excel.Workbook Excel_WB1 = Excel_app1.Workbooks.Add();
-            Excel.Worksheet Excel_WS1 = new Excel.Worksheet();
-            Excel_app1.Cells[1, 1] = "馬達牙攻轉速";
-            Excel_app1.Cells[1, 2] = "馬達凸輪轉速";
-            Excel_app1.Cells[1, 3] = "馬達牙攻扭矩";
-            Excel_app1.Cells[1, 4] = "馬達凸輪扭矩";
-            Excel_app1.Cells[1, 5] = "KTR牙攻轉速";
-            Excel_app1.Cells[1, 6] = "KTR凸輪轉速";
-            Excel_app1.Cells[1, 7] = "KTR牙攻扭矩";
-            Excel_app1.Cells[1, 8] = "KTR凸輪扭矩";
-            for(int i=0;i<motorRpm1.Count;i++)
+            string FileStr = "D:\\";
+            FileStr += DateTime.Now.ToString("yyMMdd-HHmm");
+            FileStr += "-C" + txtRpm1.Text + "-T" + txtRpm2.Text + ".csv";
+            txtReceive.Text = FileStr;
+            StreamWriter file=new StreamWriter(FileStr, false, Encoding.Default);
+            file.WriteLine("Tapper RPM(M),Cam RPM(M),Tapper Torq(M),Cam Torq(M),Tapper RPM(KTR),Cam RPM(KTR),Tapper Torq(KTR),Cam Torq(KTR)");
+            for (int i=0; i<ktrRpm1.Count; i++)
             {
-                Excel_app1.Cells[i + 2, 1] = motorRpm1[i];
-                Excel_app1.Cells[i + 2, 2] = motorRpm2[i];
-                Excel_app1.Cells[i + 2, 3] = motorTorque1[i];
-                Excel_app1.Cells[i + 2, 4] = motorTorque2[i];
+                if (i>motorRpm1.Count-1)
+                {
+                    file.WriteLine(",,,," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i]);
+                }
+                else
+                {
+                    file.WriteLine(motorRpm1[i] + "," + motorRpm2[i] + "," + motorTorque1[i] + "," + motorTorque2[i] + "," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i]);
+                }
             }
-            for (int i = 0; i < ktrRpm1.Count; i++)
-            {
-                Excel_app1.Cells[i + 2, 5] = ktrRpm1[i];
-                Excel_app1.Cells[i + 2, 6] = ktrRpm2[i];
-                Excel_app1.Cells[i + 2, 7] = ktrTorque1[i];
-                Excel_app1.Cells[i + 2, 8] = ktrTorque2[i];
-            }
-            Excel_WB1.SaveAs(FileStr);
-            Excel_WB1.Close();
-            Excel_WB1 = null;
-            Excel_app1.Quit();
-            Excel_app1 = null;
-            ExcelPath.Text += FileStr;
+            file.Close();
+            //String FileStr = "D:\\";
+            //FileStr += DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
+            //Excel.Application Excel_app1 = new Excel.Application();
+            //Excel.Workbook Excel_WB1 = Excel_app1.Workbooks.Add();
+            //Excel.Worksheet Excel_WS1 = new Excel.Worksheet();
+            //Excel_app1.Cells[1, 1] = "馬達牙攻轉速";
+            //Excel_app1.Cells[1, 2] = "馬達凸輪轉速";
+            //Excel_app1.Cells[1, 3] = "馬達牙攻扭矩";
+            //Excel_app1.Cells[1, 4] = "馬達凸輪扭矩";
+            //Excel_app1.Cells[1, 5] = "KTR牙攻轉速";
+            //Excel_app1.Cells[1, 6] = "KTR凸輪轉速";
+            //Excel_app1.Cells[1, 7] = "KTR牙攻扭矩";
+            //Excel_app1.Cells[1, 8] = "KTR凸輪扭矩";
+            //for(int i=0;i<motorRpm1.Count;i++)
+            //{
+            //    Excel_app1.Cells[i + 2, 1] = motorRpm1[i];
+            //    Excel_app1.Cells[i + 2, 2] = motorRpm2[i];
+            //    Excel_app1.Cells[i + 2, 3] = motorTorque1[i];
+            //    Excel_app1.Cells[i + 2, 4] = motorTorque2[i];
+            //}
+            //for (int i = 0; i < ktrRpm1.Count; i++)
+            //{
+            //    Excel_app1.Cells[i + 2, 5] = ktrRpm1[i];
+            //    Excel_app1.Cells[i + 2, 6] = ktrRpm2[i];
+            //    Excel_app1.Cells[i + 2, 7] = ktrTorque1[i];
+            //    Excel_app1.Cells[i + 2, 8] = ktrTorque2[i];
+            //}
+            //Excel_WB1.SaveAs(FileStr);
+            //Excel_WB1.Close();
+            //Excel_WB1 = null;
+            //Excel_app1.Quit();
+            //Excel_app1 = null;
+            //ExcelPath.Text += FileStr;
         }
 
+        private void btnConnectPLC2_Click(object sender, EventArgs e)
+        {
+            string IP = txtIPToPLC.Text;                //設定變數IP，其字串
+            int Port = int.Parse(txtPortToPLC.Text);    //設定變數Port，為整數
+            try
+            {
+                //IPAddress是IP，如" 127.0.0.1"  ;IPEndPoint是ip和端口對的組合，如"127.0.0.1: 1000 "  
+                IPEndPoint EP2 = new IPEndPoint(IPAddress.Parse(IP), Port);
+                //new Socket( 通訊協定家族IP4 , 通訊端類型 , 通訊協定TCP)
+                T2 = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                T2.Connect(EP2); //建立連線
+                lblConnectStatus2.Text = "已連線至PLC2";
+                btnWork.Enabled = true;
+            }
+            catch (Exception)
+            {
+                lblConnectStatus.Text = "無法連線至PLC,請檢查線路或IP";
+                return;
+            }
+        }
 
         private void btnWork_Click(object sender, EventArgs e)
         {
@@ -361,7 +401,9 @@ namespace DMC_NET
 
             ThWorking_PLC = new Thread(working_PLC);
             ThWorking_PLC.Start();
-            
+            ThWorking_PLC_2 = new Thread(working_PLC2);
+            ThWorking_PLC_2.Start();
+
         }
 
         private void working_PLC()
@@ -388,6 +430,43 @@ namespace DMC_NET
                         //chart7.Series[0].Points.Clear();
                         //chart8.Series[0].Points.Clear();
                         
+                        newturn = false;
+                    }
+                    KtrBoolClear = !KtrBoolClear;
+                }
+                else
+                {
+                    //chart5.Series[0].Points.AddXY(ktrRpm1.Count, ktrRpm1[ktrRpm1.Count - 1]);
+                    //chart6.Series[0].Points.AddXY(ktrRpm2.Count, ktrRpm2[ktrRpm2.Count - 1]);
+                    //chart7.Series[0].Points.AddXY(ktrTorque1.Count, ktrTorque1[ktrTorque1.Count - 1]);
+                    //chart8.Series[0].Points.AddXY(ktrTorque2.Count, ktrTorque2[ktrTorque2.Count - 1]);
+                }
+            }
+        }
+        private void working_PLC2()
+        {
+            while (true)
+            {
+                if (!ThWorking.IsAlive)
+                {
+                    lblcount.Text = "exit";
+                    break;
+                }
+                Send2("000000000006" + "010313000004");
+                Listen2();
+                if (KtrBoolClear)
+                {
+                    if (newturn)
+                    {
+                        //ktrRpm1.Clear();
+                        //ktrRpm2.Clear();
+                        //ktrTorque1.Clear();
+                        //ktrTorque2.Clear();
+                        //chart5.Series[0].Points.Clear();
+                        //chart6.Series[0].Points.Clear();
+                        //chart7.Series[0].Points.Clear();
+                        //chart8.Series[0].Points.Clear();
+
                         newturn = false;
                     }
                     KtrBoolClear = !KtrBoolClear;
@@ -776,6 +855,20 @@ namespace DMC_NET
             }
             T.Send(A, 0, Str.Length / 2, SocketFlags.None);
         }
+
+        private void Send2(string Str)
+        {
+            byte[] A = new byte[1]; //初始需告陣列(因不知道資料大小，下面會做陣列調整)
+            for (int i = 0; i < Str.Length / 2; i++)
+            {
+                Array.Resize(ref A, Str.Length / 2);  //Array.Resize(ref 陣列名稱, 新的陣列大小)  
+                string str2 = Str.Substring(i * 2, 2);
+                A[i] = Convert.ToByte(str2, 16); //字串依照"frombase"轉換數字(Byte)
+            }
+            T2.Send(A, 0, Str.Length / 2, SocketFlags.None);
+        }
+
+
         private void Listen()
         {
 
@@ -798,8 +891,9 @@ namespace DMC_NET
                     //break;
                 }
             }
-            txtReceive.Text = BitConverter.ToString(B, 6, inLen - 6);
-            string[] ary = txtReceive.Text.Split('-');
+            //txtReceive.Text = BitConverter.ToString(B, 6, inLen - 6);
+            //string[] ary = txtReceive.Text.Split('-');
+            string[] ary = BitConverter.ToString(B, 6, inLen - 6).Split('-');
             //將讀取到的16進制碼換成10進制碼，且切割後的陣列兩個為1組
             //double[] rpm1 = new double[5];
             //double[] rpm2 = new double[5];
@@ -818,17 +912,81 @@ namespace DMC_NET
             {
                 Send("000000000006" + "010313000004");
                 inLen = T.ReceiveFrom(B, ref ServerEP);
-                txtReceive.Text = BitConverter.ToString(B, 6, inLen - 6);
-                ary = txtReceive.Text.Split('-');
+                //txtReceive.Text = BitConverter.ToString(B, 6, inLen - 6);
+                //ary = txtReceive.Text.Split('-');
+                ary = BitConverter.ToString(B, 6, inLen - 6).Split('-');
                 rpm1 = changeVoltage0x16(Int32.Parse(ary[3] + ary[4], System.Globalization.NumberStyles.HexNumber));
                 rpm2 = changeVoltage0x16(Int32.Parse(ary[5] + ary[6], System.Globalization.NumberStyles.HexNumber));
                 torque1 = changeVoltage0x16(Int32.Parse(ary[7] + ary[8], System.Globalization.NumberStyles.HexNumber));
                 torque2 = changeVoltage0x16(Int32.Parse(ary[9] + ary[10], System.Globalization.NumberStyles.HexNumber));
+                
             }
             rpm1 = (rpm1 * 10 / 8000) * rpmRate1;
             rpm2= (rpm2 * 10 / 8000) * rpmRate2;
-            torque1 = (torque1 * 10 / 8000) * torqueRate/5;
-            torque2 = (torque2 * 10 / 8000) * torqueRate;
+            torque1 = (torque1 * 10 / 8000) * torqueRate1;
+            torque2 = (torque2 * 10 / 8000) * torqueRate2;
+            
+            ktrRpm1.Add(rpm1);
+            ktrRpm2.Add(rpm2);
+            ktrTorque1.Add(torque1);
+            ktrTorque2.Add(torque2);
+
+        }
+        private void Listen2()
+        {
+
+            EndPoint ServerEP = (EndPoint)T2.RemoteEndPoint;
+            byte[] B = new byte[1023];
+            int inLen = 0;
+            while (true)
+            {
+                try
+                {
+                    inLen = T2.ReceiveFrom(B, ref ServerEP);
+                    break;
+                }
+                catch (Exception) //當try發生問題時重新向PLC發送請求(18.10.25)
+                {
+                    //T.Close();
+                    Send("000000000006" + "010313000004");
+                    //MessageBox.Show("伺服器中斷連線!");
+                    //btnConnectPLC.Enabled = true;
+                    //break;
+                }
+            }
+            //txtReceive.Text = BitConverter.ToString(B, 6, inLen - 6);
+            //string[] ary = txtReceive.Text.Split('-');
+            string[] ary2 = BitConverter.ToString(B, 6, inLen - 6).Split('-');
+            //將讀取到的16進制碼換成10進制碼，且切割後的陣列兩個為1組
+            //double[] rpm1 = new double[5];
+            //double[] rpm2 = new double[5];
+            //double[] torque1 = new double[5];
+            //double[] torque2 = new double[5];
+            double rpm1, rpm2, torque1, torque2;
+            try //嘗試轉換電壓資料，發生Exception時ary為null(18.10.25)
+            {
+                rpm1 = changeVoltage0x16(Int32.Parse(ary2[3] + ary2[4], System.Globalization.NumberStyles.HexNumber));
+                rpm2 = changeVoltage0x16(Int32.Parse(ary2[5] + ary2[6], System.Globalization.NumberStyles.HexNumber));
+                torque1 = changeVoltage0x16(Int32.Parse(ary2[7] + ary2[8], System.Globalization.NumberStyles.HexNumber));
+                torque2 = changeVoltage0x16(Int32.Parse(ary2[9] + ary2[10], System.Globalization.NumberStyles.HexNumber));
+            }
+            //因此重新發送請求給PLC(18.10.25)
+            catch (Exception)
+            {
+                Send("000000000006" + "010313000004");
+                inLen = T.ReceiveFrom(B, ref ServerEP);
+                //txtReceive.Text = BitConverter.ToString(B, 6, inLen - 6);
+                //ary = txtReceive.Text.Split('-');
+                ary2 = BitConverter.ToString(B, 6, inLen - 6).Split('-');
+                rpm1 = changeVoltage0x16(Int32.Parse(ary2[3] + ary2[4], System.Globalization.NumberStyles.HexNumber));
+                rpm2 = changeVoltage0x16(Int32.Parse(ary2[5] + ary2[6], System.Globalization.NumberStyles.HexNumber));
+                torque1 = changeVoltage0x16(Int32.Parse(ary2[7] + ary2[8], System.Globalization.NumberStyles.HexNumber));
+                torque2 = changeVoltage0x16(Int32.Parse(ary2[9] + ary2[10], System.Globalization.NumberStyles.HexNumber));
+            }
+            rpm1 = (rpm1 * 10 / 8192) * rpmRate1;
+            rpm2 = (rpm2 * 10 / 8192) * rpmRate2;
+            torque1 = (torque1 * 10 / 8192) * torqueRate1;
+            torque2 = (torque2 * 10 / 8192) * torqueRate2;
             ktrRpm1.Add(rpm1);
             ktrRpm2.Add(rpm2);
             ktrTorque1.Add(torque1);
