@@ -152,6 +152,11 @@
             this.chart7 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart8 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.rpm1_off = new System.Windows.Forms.TextBox();
+            this.rpm2_off = new System.Windows.Forms.TextBox();
+            this.torq1_off = new System.Windows.Forms.TextBox();
+            this.torq2_off = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -1181,11 +1186,63 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(1179, 124);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 112);
+            this.button2.TabIndex = 37;
+            this.button2.Text = "偏壓值量測";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // rpm1_off
+            // 
+            this.rpm1_off.Enabled = false;
+            this.rpm1_off.Location = new System.Drawing.Point(1043, 124);
+            this.rpm1_off.Name = "rpm1_off";
+            this.rpm1_off.Size = new System.Drawing.Size(130, 22);
+            this.rpm1_off.TabIndex = 69;
+            this.rpm1_off.Text = "0";
+            // 
+            // rpm2_off
+            // 
+            this.rpm2_off.Enabled = false;
+            this.rpm2_off.Location = new System.Drawing.Point(1043, 155);
+            this.rpm2_off.Name = "rpm2_off";
+            this.rpm2_off.Size = new System.Drawing.Size(130, 22);
+            this.rpm2_off.TabIndex = 70;
+            this.rpm2_off.Text = "0";
+            this.rpm2_off.TextChanged += new System.EventHandler(this.rpm2_off_TextChanged);
+            // 
+            // torq1_off
+            // 
+            this.torq1_off.Enabled = false;
+            this.torq1_off.Location = new System.Drawing.Point(1043, 186);
+            this.torq1_off.Name = "torq1_off";
+            this.torq1_off.Size = new System.Drawing.Size(130, 22);
+            this.torq1_off.TabIndex = 71;
+            this.torq1_off.Text = "0";
+            // 
+            // torq2_off
+            // 
+            this.torq2_off.Enabled = false;
+            this.torq2_off.Location = new System.Drawing.Point(1043, 214);
+            this.torq2_off.Name = "torq2_off";
+            this.torq2_off.Size = new System.Drawing.Size(130, 22);
+            this.torq2_off.TabIndex = 72;
+            this.torq2_off.Text = "0";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1964, 985);
+            this.Controls.Add(this.torq2_off);
+            this.Controls.Add(this.torq1_off);
+            this.Controls.Add(this.rpm2_off);
+            this.Controls.Add(this.rpm1_off);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.chart8);
             this.Controls.Add(this.chart4);
@@ -1344,6 +1401,11 @@
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.TextBox txtIPToPLC2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox rpm1_off;
+        private System.Windows.Forms.TextBox rpm2_off;
+        private System.Windows.Forms.TextBox torq1_off;
+        private System.Windows.Forms.TextBox torq2_off;
     }
 }
 

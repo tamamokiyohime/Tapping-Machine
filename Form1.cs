@@ -5,6 +5,7 @@ using System.Threading;
 using System.Net;               //載入網路
 using System.Net.Sockets;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Linq;
 
 using PCI_DMC;
 using PCI_DMC_ERR;
@@ -58,6 +59,12 @@ namespace DMC_NET
         List<double> ktrTorque2 = new List<double>();
         List<double> ktrRpm1 = new List<double>();
         List<double> ktrRpm2 = new List<double>();
+
+        List<double> ktrTorque1_off = new List<double>();
+        List<double> ktrTorque2_off = new List<double>();
+        List<double> ktrRpm1_off = new List<double>();
+        List<double> ktrRpm2_off = new List<double>();
+
         List<char> source = new List<char>();
         double[,] rpm_1 = new double[90000, 10];
         double[,] rpm_2 = new double[90000, 10];
@@ -406,6 +413,78 @@ namespace DMC_NET
         }
 
         private void chart5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            ktrRpm1_off.Clear();
+            ktrRpm2_off.Clear();
+            ktrTorque1_off.Clear();
+            ktrTorque2_off.Clear();
+            int times = 0;
+            while(times < 100)
+            {
+                Send("000000000006" + "010313000004");
+                EndPoint ServerEP = (EndPoint)T.RemoteEndPoint;
+                byte[] B = new byte[1023];
+                int inLen = 0;
+                while (true)
+                {
+                    try
+                    {
+                        inLen = T.ReceiveFrom(B, ref ServerEP);
+                        break;
+                    }
+                    catch (Exception) //當try發生問題時重新向PLC發送請求(18.10.25)
+                    {
+                        Send("000000000006" + "010313000004");
+                    }
+                }
+                string[] ary = BitConverter.ToString(B, 6, inLen - 6).Split('-');
+                //double rpm1, rpm2, torque1, torque2;
+                try //嘗試轉換電壓資料，發生Exception時ary為null(18.10.25)
+                {
+                    //rpm1 = changeVoltage0x16(Int32.Parse(ary[3] + ary[4], System.Globalization.NumberStyles.HexNumber));
+                    //rpm2 = changeVoltage0x16(Int32.Parse(ary[5] + ary[6], System.Globalization.NumberStyles.HexNumber));
+                    //torque1 = changeVoltage0x16(Int32.Parse(ary[7] + ary[8], System.Globalization.NumberStyles.HexNumber));
+                    //torque2 = changeVoltage0x16(Int32.Parse(ary[9] + ary[10], System.Globalization.NumberStyles.HexNumber));
+
+                    ktrRpm1_off.Add(changeVoltage0x16(Int32.Parse(ary[3] + ary[4], System.Globalization.NumberStyles.HexNumber)));
+                    ktrRpm2_off.Add(changeVoltage0x16(Int32.Parse(ary[5] + ary[6], System.Globalization.NumberStyles.HexNumber)));
+                    ktrTorque1_off.Add(changeVoltage0x16(Int32.Parse(ary[7] + ary[8], System.Globalization.NumberStyles.HexNumber)));
+                    ktrTorque2_off.Add(changeVoltage0x16(Int32.Parse(ary[9] + ary[10], System.Globalization.NumberStyles.HexNumber)));
+                }
+                //因此重新發送請求給PLC(18.10.25)
+                catch (Exception)
+                {
+                    Send("000000000006" + "010313000004");
+                    inLen = T.ReceiveFrom(B, ref ServerEP);
+                    ary = BitConverter.ToString(B, 6, inLen - 6).Split('-');
+                    //rpm1 = changeVoltage0x16(Int32.Parse(ary[3] + ary[4], System.Globalization.NumberStyles.HexNumber));
+                    //rpm2 = changeVoltage0x16(Int32.Parse(ary[5] + ary[6], System.Globalization.NumberStyles.HexNumber));
+                    //torque1 = changeVoltage0x16(Int32.Parse(ary[7] + ary[8], System.Globalization.NumberStyles.HexNumber));
+                    //torque2 = changeVoltage0x16(Int32.Parse(ary[9] + ary[10], System.Globalization.NumberStyles.HexNumber));
+                    ktrRpm1_off.Add(changeVoltage0x16(Int32.Parse(ary[3] + ary[4], System.Globalization.NumberStyles.HexNumber)));
+                    ktrRpm2_off.Add(changeVoltage0x16(Int32.Parse(ary[5] + ary[6], System.Globalization.NumberStyles.HexNumber)));
+                    ktrTorque1_off.Add(changeVoltage0x16(Int32.Parse(ary[7] + ary[8], System.Globalization.NumberStyles.HexNumber)));
+                    ktrTorque2_off.Add(changeVoltage0x16(Int32.Parse(ary[9] + ary[10], System.Globalization.NumberStyles.HexNumber)));
+
+                }
+                times++;
+
+                rpm1_off.Text = (ktrRpm1_off.Average()*10/8192).ToString();
+                rpm2_off.Text = (ktrRpm2_off.Average() * 10 / 8192).ToString();
+                torq1_off.Text = (ktrTorque1_off.Average() * 10 / 8192).ToString();
+                torq2_off.Text = (ktrTorque2_off.Average() * 10 / 8192).ToString();
+
+            }
+
+            
+        }
+
+        private void rpm2_off_TextChanged(object sender, EventArgs e)
         {
 
         }
@@ -832,10 +911,10 @@ namespace DMC_NET
                 torque2 = changeVoltage0x16(Int32.Parse(ary[9] + ary[10], System.Globalization.NumberStyles.HexNumber));
                 
             }
-            rpm1 = (rpm1 * 10 / 8000) * rpmRate1;
-            rpm2= (rpm2 * 10 / 8000) * rpmRate2;
-            torque1 = (torque1 * 10 / 8000) * torqueRate1;
-            torque2 = (torque2 * 10 / 8000) * torqueRate2;
+            rpm1 = (rpm1 * 10 / 8192-double.Parse(rpm1_off.Text)) * rpmRate1;
+            rpm2= (rpm2 * 10 / 8192-double.Parse(rpm2_off.Text)) * rpmRate2;
+            torque1 = (torque1 * 10 / 8192-double.Parse(torq1_off.Text)) * torqueRate1;
+            torque2 = (torque2 * 10 / 8192 - double.Parse(torq1_off.Text)) * torqueRate2;
             
             ktrRpm1.Add(rpm1);
             ktrRpm2.Add(rpm2);
@@ -895,10 +974,10 @@ namespace DMC_NET
                 torque1 = changeVoltage0x16(Int32.Parse(ary2[7] + ary2[8], System.Globalization.NumberStyles.HexNumber));
                 torque2 = changeVoltage0x16(Int32.Parse(ary2[9] + ary2[10], System.Globalization.NumberStyles.HexNumber));
             }
-            rpm1 = (rpm1 * 10 / 8192) * rpmRate1;
-            rpm2 = (rpm2 * 10 / 8192) * rpmRate2;
-            torque1 = (torque1 * 10 / 8192) * torqueRate1;
-            torque2 = (torque2 * 10 / 8192) * torqueRate2;
+            rpm1 = (rpm1 * 10 / 8192 - double.Parse(rpm1_off.Text)) * rpmRate1;
+            rpm2 = (rpm2 * 10 / 8192 - double.Parse(rpm2_off.Text)) * rpmRate2;
+            torque1 = (torque1 * 10 / 8192 - double.Parse(torq1_off.Text)) * torqueRate1;
+            torque2 = (torque2 * 10 / 8192 - double.Parse(torq1_off.Text)) * torqueRate2;
             ktrRpm1.Add(rpm1);
             ktrRpm2.Add(rpm2);
             ktrTorque1.Add(torque1);
