@@ -6,6 +6,7 @@ using System.Net;               //載入網路
 using System.Net.Sockets;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Linq;
+using System.Data;
 
 using PCI_DMC;
 using PCI_DMC_ERR;
@@ -75,9 +76,25 @@ namespace DMC_NET
         double[] torque_motor1 = new double[90000];
         double[] torque_motor2 = new double[90000];
 
+        delegate void UpdateUIDelegate();
+        double[] data;  //緩衝器裡面的陣列
+        DataTable dt = new DataTable();
+
         public Form1()
         {
             InitializeComponent();
+            //data = new double[bufferedAiCtrl1.BufferCapacity];//設定DAQ 緩衝器
+            //bufferedAiCtrl1.Streaming = true;
+            //bufferedAiCtrl1.Prepare();
+            dt.Columns.Add("RPM1");
+            dt.Columns.Add("Torq1");
+            dt.Columns.Add("RPM2");
+            dt.Columns.Add("Torq2");
+            dataGridView1.DataSource = dt;
+            timer1.Interval = 100;
+            timer1.Enabled = false;
+            bufferedAiCtrl1.Prepare();
+
         }
 
         private void btninitial_Click(object sender, EventArgs e)
@@ -312,7 +329,8 @@ namespace DMC_NET
         }
         private void btnSaveExcel_Click(object sender, EventArgs e)
         {
-            string FileStr = "D:\\";
+            string FileStr = "D:\\實驗數據\\";
+            string FileStr2 = "";
             FileStr += DateTime.Now.ToString("yyyyMMdd");
             FileStr += " Experiment\\";
             if (!Directory.Exists(FileStr))
@@ -320,25 +338,49 @@ namespace DMC_NET
                 Directory.CreateDirectory(FileStr);
             }
             FileStr += DateTime.Now.ToString("yyMMdd-HHmm");
-            FileStr += "-C" + txtRpm1.Text + "-T" + txtRpm2.Text + ".csv";
+            FileStr2 = FileStr;
+            FileStr2 += "_DAQ-C" + txtRpm1.Text + "-T" + txtRpm2.Text + notice.Text + ".csv";
+            FileStr += "-C" + txtRpm1.Text + "-T" + txtRpm2.Text +notice.Text+ ".csv";
             txtReceive.Text = FileStr;
+
             StreamWriter file = new StreamWriter(FileStr, false, Encoding.Default);
-            
             file.Write("Tapper RPM(M),Cam RPM(M),Tapper Torq(M),Cam Torq(M),Tapper RPM(KTR),Cam RPM(KTR),Tapper Torq(KTR),Cam Torq(KTR),");
             file.WriteLine(motorRpm1.Count.ToString() + "," + motorRpm2.Count.ToString() + "," + motorTorque1.Count.ToString() + "," + motorTorque2.Count.ToString() + "," + ktrRpm1.Count.ToString() + "," + ktrRpm2.Count.ToString() + "," + ktrTorque1.Count.ToString() + "," + ktrTorque2.Count.ToString());
             for (int i = 0; i < ktrRpm1.Count; i++)
             {
                 if (i>motorRpm1.Count-1)
                 {
-                    file.WriteLine(",,,," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i] + "," + source[i]);
+                    file.WriteLine(",,,," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i] );
                 }
                 else
                 {
-                    file.WriteLine(motorRpm1[i] + "," + motorRpm2[i] + "," + motorTorque1[i] + "," + motorTorque2[i] + "," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i] + "," + source[i]);
+                    file.WriteLine(motorRpm1[i] + "," + motorRpm2[i] + "," + motorTorque1[i] + "," + motorTorque2[i] + "," + ktrRpm1[i] + "," + ktrRpm2[i] + "," + ktrTorque1[i] + "," + ktrTorque2[i] );
                 }
             }
             file.Close();
-            
+
+            StreamWriter file2 = new StreamWriter(FileStr2, false, Encoding.Default);
+            string DAQ_out = "";
+            foreach (DataColumn column in dt.Columns)
+            {
+                DAQ_out += column.ColumnName + ",";
+            }
+            DAQ_out += "\n";
+            file2.Write(DAQ_out);
+            DAQ_out = "";
+            foreach(DataRow row in dt.Rows)
+            {
+                foreach(DataColumn col in dt.Columns)
+                {
+                    DAQ_out += row[col].ToString().Trim() + ",";
+                }
+                DAQ_out += "\n";
+                file2.Write(DAQ_out);
+                DAQ_out = "";
+            }
+            file2.Dispose();
+            file2.Close();
+
         }
 
         private void btnConnectPLC2_Click(object sender, EventArgs e)
@@ -384,15 +426,25 @@ namespace DMC_NET
             motorTorque2.Clear();
             source.Clear();
 
-            chart5.DataSource = ktrRpm1;
-            chart6.DataSource = ktrRpm2;
-            chart7.DataSource = ktrTorque1;
-            chart8.DataSource = ktrTorque2;
-            chart5.Series[0].YValueMembers = "ktrRpm1";
-            chart6.Series[0].YValueMembers = "ktrRpm2";
-            chart7.Series[0].YValueMembers = "ktrTorque1";
-            chart8.Series[0].YValueMembers = "ktrTorque2";
+            //chart5.DataSource = ktrRpm1;
+            //chart6.DataSource = ktrRpm2;
+            //chart7.DataSource = ktrTorque1;
+            //chart8.DataSource = ktrTorque2;
+            //chart5.Series[0].YValueMembers = "ktrRpm1";
+            //chart6.Series[0].YValueMembers = "ktrRpm2";
+            //chart7.Series[0].YValueMembers = "ktrTorque1";
+            //chart8.Series[0].YValueMembers = "ktrTorque2";
 
+            dt.Clear();
+
+            data = new double[bufferedAiCtrl1.BufferCapacity];//設定DAQ 緩衝器
+                                                              //bufferedAiCtrl1.Streaming = true;
+
+            //bufferedAiCtrl1.Prepare();
+            bufferedAiCtrl1.Start();
+            //timer1.Enabled = true;
+
+            rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, double.Parse(txtTacc.Text), double.Parse(txtTdec.Text));
             ThWorking = new Thread(working);
             ThWorking.Start();
 
@@ -405,6 +457,18 @@ namespace DMC_NET
 
         private void button1_Click(object sender, EventArgs e)
         {
+            chart5.DataSource = dt;
+            chart6.DataSource = dt;
+            chart7.DataSource = dt;
+            chart8.DataSource = dt;
+            chart5.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart6.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart7.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart8.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart5.Series[0].YValueMembers = "RPM1";
+            chart6.Series[0].YValueMembers = "RPM2";
+            chart7.Series[0].YValueMembers = "Torq1";
+            chart8.Series[0].YValueMembers = "Torq2";
             chart5.DataBind();
             chart6.DataBind();
             chart7.DataBind();
@@ -487,6 +551,52 @@ namespace DMC_NET
         private void rpm2_off_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void bufferedAiCtrl1_DataReady(object sender, Automation.BDaq.BfdAiEventArgs e)
+        {
+            bufferedAiCtrl1.GetData(e.Count, data);
+            this.Invoke((UpdateUIDelegate)delegate ()
+            {
+                DataRow row = dt.NewRow();
+                bool ready = false;
+                for (int i = 0; i < e.Count; i++)
+                {
+                    switch (i % 4)
+                    {
+                        case 0:
+                            row["RPM1"] = data[i] * rpmRate1;
+                            //row["RPM1"] = data[i];
+                            break;
+                        case 1:
+                            row["Torq1"] = data[i] * torqueRate1;
+                            //row["Torq1"] = data[i];
+                            break;
+                        case 2:
+                            row["RPM2"] = data[i] * rpmRate2;
+                            //row["RPM2"] = data[i];
+                            break;
+                        case 3:
+                            row["Torq2"] = data[i] * torqueRate2;
+                            //row["Torq2"] = data[i];
+                            ready = true;
+                            break;
+                    }
+                    if (ready)
+                    {
+                        dt.Rows.Add(row);
+                        dt.ImportRow(row);
+                        ready = false;
+                        dataGridView1.Update();
+                        row = dt.NewRow();
+                    }
+                }
+            });
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            bufferedAiCtrl1.Start();
         }
 
         private void working_PLC()
@@ -589,7 +699,7 @@ namespace DMC_NET
                 bool boolGo = true;
                 newturn = true;
                 rc = CPCI_DMC.CS_DMC_01_get_command(gCardNo, node2, 0, ref cmd1);
-                rc = CPCI_DMC.CS_DMC_01_start_tr_move(gCardNo, node2, 0, (int)(OneCirclePluse * TransmissionRate), 0, Convert.ToInt32(2133.3333 * -Int16.Parse(txtRpm1.Text)), 0.1, 0.1);
+                rc = CPCI_DMC.CS_DMC_01_start_tr_move(gCardNo, node2, 0, OneCirclePluse * TransmissionRate, 0, Convert.ToInt32(2133.3333 * -Int16.Parse(txtRpm1.Text)), 0.1, 0.1);
                 while (true)
                 {
                     showMotorState();
@@ -602,18 +712,18 @@ namespace DMC_NET
                     label30.Text = X0Message;
                     if (X1Message == "01-02-01-01" & boolGo)
                     {
-                        rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
+                        //rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
                         rc = CPCI_DMC.CS_DMC_01_set_velocity(gCardNo, node1, 0, Int32.Parse(txtRpm2.Text));
                     }
                     else if (X1Message == "01-02-01-00")
                     {
-                        rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
+                        //rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
                         rc = CPCI_DMC.CS_DMC_01_set_velocity(gCardNo, node1, 0, 0);
                         boolGo = false;
                     }
-                    else if (X1Message == "01-02-01-01" & !boolGo & X0Message != "01-02-01-00") 
+                    else if (X1Message == "01-02-01-01" & !boolGo & X0Message != "01-02-01-00")
                     {
-                        rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
+                        //rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
                         rc = CPCI_DMC.CS_DMC_01_set_velocity(gCardNo, node1, 0, -Int32.Parse(txtRpm2.Text));
                     }
                     else if (X0Message == "01-02-01-00" & !boolGo)
@@ -621,7 +731,7 @@ namespace DMC_NET
                         KtrBoolClear = true;
                         label29.Text = "in";
                         showMotorState();
-                        rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
+                        //rc = CPCI_DMC.CS_DMC_01_set_velocity_mode(gCardNo, node1, 0, 0.1, 0.1);
                         rc = CPCI_DMC.CS_DMC_01_set_velocity(gCardNo, node1, 0, 0);
                         Thread.Sleep(500);
                         CPCI_DMC.CS_DMC_01_set_position(gCardNo, node1, 0, 0);
@@ -630,7 +740,11 @@ namespace DMC_NET
                         //CPCI_DMC.CS_DMC_01_set_command(gCardNo, node2, 0, 0);
                         break;
                     }
+                    
                 }
+                bufferedAiCtrl1.Stop();
+                //bufferedAiCtrl1.Cleanup();
+                //bufferedAiCtrl1.Release();
             }
         }
         private void limitSend(string Str)
